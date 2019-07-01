@@ -26,6 +26,7 @@ public class GameController : MonoBehaviour {
 		}
 		if (Input.GetKeyDown (KeyCode.Escape)){
 			Application.Quit();
+			//Application.
 		}
 	}
 

@@ -29,17 +29,21 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	PlayerInput pi;
+	Animator anim;
 
 	// Use this for initialization
 	void Start () {
 		this.rb = this.GetComponent<Rigidbody2D> ();
 		this.sb = GetComponent<ShootBullet> ();
 		this.lastShotTime = Time.time; // Doing this so that when a wave loads the player doesn't double shoot
+		this.anim = GetComponent<Animator>();
 	}
 
 	// Update is called once per frame
 	void Update () {
 		this.pi = getPlayerInput ();
+		//Update animation controller
+		anim.SetFloat("HorizVelBlend", rb.velocity.x);
 	}
 
 	void FixedUpdate(){

@@ -48,14 +48,14 @@ public class HealthSystem : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other){
 		if (other.gameObject.layer == 12){ //current layer for enemy bullet
 			this.audioS.PlayOneShot(this.hitSound);
-			changeHealth (-1);
-			other.gameObject.GetComponent<BulletScript> ().Hit ();
+			changeHealth(-1);
+			other.gameObject.GetComponent<BulletScript>().Hit();
 		}
 	}
 
 	void OnCollisionEnter2D (Collision2D coll){
 		if (coll.collider.gameObject.layer == 11){ //current layer for enemy
-			changeHealth( -this.maxHealth); //Instakill
+			changeHealth(-this.maxHealth); //Instakill
 		}
 	}
 }

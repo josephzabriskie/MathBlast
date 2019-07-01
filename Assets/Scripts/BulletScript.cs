@@ -10,7 +10,9 @@ public class BulletScript : MonoBehaviour {
 	}
 
 	public void Hit(){
+		Debug.Log("Hit bullet!");
 		Destroy (this.gameObject);
+		Debug.Log("Hit bullet!");
 	}
 		
 }

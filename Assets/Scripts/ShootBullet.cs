@@ -19,11 +19,22 @@ public class ShootBullet : MonoBehaviour {
 	//Target
 	public GameObject targetGameObject;
 
+	//Wavescript: Make sure that we spawn our bullet int the correct wave so it get's destoryed on level change
+	Transform spawnParent;
+
 
 
 	void Start(){
 		this.currentRads = this.startingDeg * Mathf.Deg2Rad;
 		this.audioS = this.GetComponent<AudioSource> ();
+		WaveScript ws = this.GetComponentInParent<WaveScript>();
+		if (ws != null) {
+			this.spawnParent = ws.transform;	
+		}
+		else{
+			this.spawnParent = gameObject.transform;
+		}
+		Debug.Log (this.spawnPoint.name);
 	}
 
 	public void Shoot(){
@@ -39,7 +50,7 @@ public class ShootBullet : MonoBehaviour {
 	}
 
 	void ShootStraight(){
-		GameObject bullet = Instantiate (this.bullet, this.spawnPoint.position, this.spawnPoint.rotation);
+		GameObject bullet = Instantiate (this.bullet, this.spawnPoint.position, Quaternion.identity, this.spawnParent);
 		bullet.GetComponent<Rigidbody2D> ().velocity = new Vector2 (velocity * Mathf.Cos (currentRads), velocity * Mathf.Sin (currentRads));
 		this.audioS.PlayOneShot (this.shootSound);
 	}
@@ -49,7 +60,7 @@ public class ShootBullet : MonoBehaviour {
 		float rads = this.currentRads;
 		for(int i = 0; i < this.numBullets; i++){
 			//Debug.Log (string.Format ("Add bullet xvel: {0}, yvel: {1}", velocity * Mathf.Cos (rads), velocity * Mathf.Sin (rads)));
-			GameObject bullet = Instantiate(this.bullet, this.spawnPoint.position, this.spawnPoint.rotation);
+			GameObject bullet = Instantiate(this.bullet, this.spawnPoint.position, this.spawnPoint.rotation, this.spawnParent);
 			bullet.GetComponent<Rigidbody2D> ().velocity = new Vector2 (velocity * Mathf.Cos (rads), velocity * Mathf.Sin (rads));
 			rads += maxRads / this.numBullets;
 		}
@@ -59,7 +70,7 @@ public class ShootBullet : MonoBehaviour {
 	void ShootTarget(){
 		Vector3 targetPosition = this.targetGameObject.GetComponent<Transform> ().position;
 		float rads = Mathf.Atan2 ((targetPosition.y - this.transform.position.y), (targetPosition.x - this.transform.position.x));
-		GameObject bullet = Instantiate(this.bullet, this.spawnPoint.position, this.spawnPoint.rotation);
+		GameObject bullet = Instantiate(this.bullet, this.spawnPoint.position, this.spawnPoint.rotation, this.spawnParent);
 		bullet.GetComponent<Rigidbody2D> ().velocity = new Vector2 (velocity * Mathf.Cos (rads), velocity * Mathf.Sin (rads));
 		this.audioS.PlayOneShot (this.shootSound);
 	}

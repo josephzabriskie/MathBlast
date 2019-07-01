@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TitleScript : MonoBehaviour {
-	RectTransform rt;
-	float hoverAmount = 0.3f;
-	float speed = 1.0f;
+	public AnimationCurve ac;
+	[Range(0.0f,20.0f)]
+	public float hoverDist;
+	[Range(0.01f, 20.0f)]
+	public float hoverPeriod;
+	Vector3 startPos;
 
 	// Use this for initialization
 	void Start () {
-		this.rt = GetComponent<RectTransform> ();
+		Debug.LogFormat("Position: {0}", transform.position);
+		startPos = transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		Vector3 pos_new = new Vector3 (this.rt.position.x, this.rt.position.y, this.rt.position.z);
-		pos_new.y += Mathf.Sin (Time.time * this.speed) * this.hoverAmount;
-		this.rt.position = pos_new;
+		Vector3 pos_new = new Vector3 (startPos.x, startPos.y, startPos.z);
+		float acpos = Time.time % hoverPeriod / hoverPeriod;
+		pos_new.y += ac.Evaluate(acpos) * hoverDist;
+		transform.position = pos_new;
 	}
 }
