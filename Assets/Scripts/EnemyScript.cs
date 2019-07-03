@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyScript : MonoBehaviour {
+public class EnemyScript : ShipBase {
 	public AudioClip deathSound;
 	Rigidbody2D rb;
 	SpriteRenderer sr;
@@ -30,7 +30,17 @@ public class EnemyScript : MonoBehaviour {
 	WaveScript wc;
 
 
-	void Start () {
+	//Implement ship base functions
+	public override void OnDamage(){} // Do nothing
+	public override void OnKill(){
+			Destroy(this.gameObject, 1.0f);
+			GetComponent<AudioSource>().Play ();
+			wc.addChar (this.hcs.heldValue);
+			alive = false;
+	} //
+	public override void OnHeal(){}
+
+	void Start(){
 		this.sb = GetComponent<ShootBullet> ();
 		this.rb = GetComponent<Rigidbody2D> ();
 		this.sr = GetComponent<SpriteRenderer> ();
@@ -44,21 +54,22 @@ public class EnemyScript : MonoBehaviour {
 			sb.Shoot ();
 			this.lastShotTime = Time.time;
 		}
-		if (!alive) {
+		if (!alive){
 			this.transform.Rotate(new Vector3(0,0,2));
 			//don't need right now, looks alright
-			this.transform.localScale = new Vector3 (this.transform.localScale.x * 0.99f, this.transform.localScale.y * 0.99f, 1.0f);
+			this.transform.localScale = new Vector3(this.transform.localScale.x * 0.99f, this.transform.localScale.y * 0.99f, 1.0f);
 		}
 	}
 
-	void FixedUpdate () {
+	void FixedUpdate(){
 		//Add these lines if you want to make the baddie fly away randomly, polish
-		//if (!this.alive)
-		//	this.rb.AddForce (new Vector2 (0, Random.Range (0, 10)));
-		if (this.movementType == "Circle" && this.alive)
-			CircleUpdate ();
-		if (this.movementType == "Line" && this.alive)
-			LineUpdate ();
+		if(!alive){
+			return;
+		}
+		if (this.movementType == "Circle")
+			CircleUpdate();
+		if (this.movementType == "Line")
+			LineUpdate();
 		//Else do nothing, just sits there
 	}
 
@@ -67,10 +78,10 @@ public class EnemyScript : MonoBehaviour {
 		if (this.angle > 6.28319f)
 			this.angle -= 6.28319f;
 		Vector3 offset;
-		if (this.cwPath) {
-			offset = new Vector3 (Mathf.Sin (this.angle), Mathf.Cos (this.angle), 0) * this.radius;
-		} else {
-			offset = new Vector3 (Mathf.Cos (this.angle), Mathf.Sin (this.angle), 0) * this.radius;
+		if (this.cwPath){
+			offset = new Vector3(Mathf.Sin (this.angle), Mathf.Cos (this.angle), 0) * this.radius;
+		} else{
+			offset = new Vector3(Mathf.Cos (this.angle), Mathf.Sin (this.angle), 0) * this.radius;
 		}
 		this.transform.position = this.center + offset;
 	}
@@ -80,18 +91,18 @@ public class EnemyScript : MonoBehaviour {
 		if (this.angle > 6.28319f)
 			this.angle -= 6.28319f;
 		Vector3 offset;
-		if (this.horizPath) {
-			if (!this.linearReverse) {
-				offset = new Vector3 (Mathf.Sin (this.angle), 0, 0) * this.radius;
-			} else {
-				offset = new Vector3 (Mathf.Cos (this.angle), 0, 0) * this.radius;
+		if (this.horizPath){
+			if (!this.linearReverse){
+				offset = new Vector3(Mathf.Sin (this.angle), 0, 0) * this.radius;
+			} else{
+				offset = new Vector3(Mathf.Cos (this.angle), 0, 0) * this.radius;
 			}
-		} else {
-			if (!this.linearReverse) {
-				offset = new Vector3 (0, Mathf.Cos (this.angle), 0) * this.radius;
+		} else{
+			if (!this.linearReverse){
+				offset = new Vector3(0, Mathf.Cos (this.angle), 0) * this.radius;
 			}
-			else {
-				offset = new Vector3 (0, Mathf.Sin (this.angle), 0) * this.radius;
+			else{
+				offset = new Vector3(0, Mathf.Sin (this.angle), 0) * this.radius;
 			}
 		}
 		this.transform.position = this.center + offset;
@@ -102,11 +113,8 @@ public class EnemyScript : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other){
 		if (other.gameObject.layer == 10){ // right now 10 is player bullet might change (hopefully not)
-			Destroy(this.gameObject, 1.0f);
-			GetComponent<AudioSource> ().Play ();
-			other.gameObject.GetComponent<BulletScript> ().Hit ();
-			wc.addChar (this.hcs.heldValue);
-			alive = false;
+			other.gameObject.GetComponent<BulletScript>().Hit();
+			DoDamage(1);
 		}
 	}
 }

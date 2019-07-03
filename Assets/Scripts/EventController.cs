@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EventController : MonoBehaviour {
+	public static EventController instance; // singletonio
+
 	public GameObject gamecont;
 	GameController gc;
 	public GameObject[] wavelist;
@@ -17,15 +19,23 @@ public class EventController : MonoBehaviour {
 	public AudioClip loseSound;
 	public AudioClip winSound;
 	AudioSource audioS;
-	UICharSystem uics;
 
 	bool start = false;
+
+	void Awake(){
+		if(instance == null){
+			instance = this;
+		}
+		else if(instance != this){
+			Debug.LogErrorFormat("Singleton {0} instantiated multiple times, destroy all but first one up",this.GetType().Name);
+			Destroy(this);
+		}
+	}
 
 	void Start(){
 		this.gc = this.gamecont.GetComponent<GameController> ();
 		this.audioS = this.GetComponent<AudioSource> ();
-		this.uics = this.GetComponent<UICharSystem> (); // Careful not to touch UI elements that aren't yours...
-		this.uics.goalText.text = "Welcome!\n Move with arrow keys, fire with 'f'";
+		UICharSystem.instance.goalText.text = "Welcome!\n Move with arrow keys, fire with 'f'";
 	}
 
 	public void StartEventController(int startLevel){
@@ -36,11 +46,11 @@ public class EventController : MonoBehaviour {
 
 	public void StopEventController(bool gamewon){
 		if (gamewon) {
-			this.uics.goalText.text = string.Format("You WON! You beat all {0} levels", this.wavelist.Length);
+			UICharSystem.instance.goalText.text = string.Format("You WON! You beat all {0} levels", this.wavelist.Length);
 			this.audioS.PlayOneShot (this.winSound);
 		}
 		else {
-			this.uics.goalText.text = string.Format ("Nice try! You got to level {0}", this.controllerWaveNum);
+			UICharSystem.instance.goalText.text = string.Format ("Nice try! You got to level {0}", this.controllerWaveNum);
 			this.audioS.PlayOneShot (this.loseSound);
 		}
 		this.start = false;
@@ -88,8 +98,9 @@ public class EventController : MonoBehaviour {
 		this.currentWave = Instantiate (this.wavelist[wave], this.transform, true);
 		this.currentWaveScript = this.currentWave.GetComponent<WaveScript> ();
 		this.currentWaveScript.startHP = this.prevHealth;
+		UICharSystem.instance.updateHealthBar(this.prevHealth);
 		Debug.Log(string.Format("set HP {0}", this.prevHealth));
-		this.uics.currLevel.text = (wave + 1).ToString ();
+		UICharSystem.instance.currLevel.text = (wave + 1).ToString ();
 		this.audioS.PlayOneShot(this.spawnSound);
 	}
 

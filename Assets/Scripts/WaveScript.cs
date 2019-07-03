@@ -24,9 +24,6 @@ public class WaveScript : MonoBehaviour {
 
 	//PlayerHP
 	public int startHP;
-
-	//UI
-	UICharSystem uics;
 	//UI strings
 	string finishthemoffGood = "Good work! Eliminate the rest to continue";
 	string finishthemoffBad = "Not Quite... eliminate the rest and try again";
@@ -34,21 +31,20 @@ public class WaveScript : MonoBehaviour {
 	void Start(){
 		this.currentchars = this.initialchars;
 		this.currentSelection = 0;
-		this.uics = GetComponentInParent<UICharSystem> ();
-		this.uics.setCharUI (this.currentchars);
-		this.uics.setHighlightUI(this.orderOfSelection[currentSelection]);
-		this.uics.goalText.text = goalText;
+		UICharSystem.instance.setCharUI (this.currentchars);
+		UICharSystem.instance.setHighlightUI(this.orderOfSelection[currentSelection]);
+		UICharSystem.instance.goalText.text = goalText;
 		SetPlayerHealth (this.startHP);
 		this.startTime = Time.time;
 		Freeze (false); // Freeze false sets enemy shoot, playe shoot/move to false
 	}
 
 	void SetPlayerHealth (int h){
-		GetComponentInChildren<PlayerController> ().GetComponent<HealthSystem> ().startHealth = h;
+		GetComponentInChildren<PlayerController>().SetHealth(h);
 	}
 
 	public int GetPlayerHealth(){
-		return GetComponentInChildren<PlayerController> ().GetComponent<HealthSystem> ().GetHealth();
+		return GetComponentInChildren<PlayerController>().health;
 	}
 
 	void Freeze(bool b){
@@ -61,7 +57,7 @@ public class WaveScript : MonoBehaviour {
 				pc.allowMove = b;
 			}
 		}
-		this.uics.setGoImage(b);
+		UICharSystem.instance.setGoImage(b);
 	}
 
 	void Update(){
@@ -74,15 +70,15 @@ public class WaveScript : MonoBehaviour {
 	public void addChar(string s){ //Sorry everyone, add character takes a string...
 		if (!this.doneWithValues) {
 			this.currentchars [this.orderOfSelection [this.currentSelection++]] = s;
-			this.uics.setCharUI (this.currentchars);
+			UICharSystem.instance.setCharUI (this.currentchars);
 			if (this.currentSelection >= this.orderOfSelection.Length) {
 				//We're all done with our shot numbers
 				this.doneWithValues = true;
-				this.uics.setHighlightUI (-1);
+				UICharSystem.instance.setHighlightUI (-1);
 				evalExpression ();
 			}
 			else {
-				this.uics.setHighlightUI (this.orderOfSelection [this.currentSelection]);
+				UICharSystem.instance.setHighlightUI (this.orderOfSelection [this.currentSelection]);
 			}
 		} else
 			Debug.Log ("addChar: Woah, added another char after we thought we were done?"); // turns out this is ok as long as we have that first if statement
@@ -114,7 +110,7 @@ public class WaveScript : MonoBehaviour {
 		Debug.Log (string.Format("goal: {0}, curr: {1}", string.Join("", this.currentchars), string.Join("", this.goalchars)));
 		if (string.Join("", this.currentchars) == string.Join("", this.goalchars)) {
 			//Debug.Log ("Nice Job! you did it!");
-			this.uics.goalText.text = this.finishthemoffGood;
+			UICharSystem.instance.goalText.text = this.finishthemoffGood;
 			this.waveSuccessState = 1;
 		}
 		else {
@@ -122,9 +118,9 @@ public class WaveScript : MonoBehaviour {
 			for(int i = 0; i < this.currentchars.Length; i++) {
 				if (this.currentchars [i] == "=")
 					this.currentchars [i] = "!=";
-				this.uics.setCharUI (this.currentchars);
+				UICharSystem.instance.setCharUI (this.currentchars);
 			}
-			this.uics.goalText.text = this.finishthemoffBad;
+			UICharSystem.instance.goalText.text = this.finishthemoffBad;
 			this.waveSuccessState = -1;
 		}
 	}

@@ -5,25 +5,29 @@ using UnityEngine;
 public class CameraScript : MonoBehaviour {
 
 	Camera c;
+	RectTransform gameRect;
 	public GameObject player;
 	float offset = 2;
 
 	void Start () {
 		this.c = this.GetComponent<Camera> ();
+		this.gameRect = transform.Find("ViewRect").GetComponent<RectTransform>();
 		// set the desired aspect ratio (the values in this example are
 		// hard-coded for 16:9, but you could make them into public
 		// variables instead so you can set them at design time)
 		//float targetaspect = 16.0f / 9.0f;
-		float targetaspect = 9.0f / 16.0f;
+		//float targetaspect = 9.0f / 16.0f;
+		float targetaspect = gameRect.rect.width/gameRect.rect.height;
 
 		// determine the game window's current aspect ratio
 		float windowaspect = (float)Screen.width / (float)Screen.height;
+		Debug.LogFormat("Window aspect currently: {0}", windowaspect);
 
 		// current viewport height should be scaled by this amount
 		float scaleheight = windowaspect / targetaspect;
+		Debug.LogFormat("Scale ht {0}", scaleheight);
 
-		// if scaled height is less than current height, add letterbox
-		if (scaleheight < 1.0f)
+		if (scaleheight < 1.0f) // if scaled height is less than current height, add letterbox
 		{  
 			Rect rect = this.c.rect;
 

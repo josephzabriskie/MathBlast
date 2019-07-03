@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4303526766014650}
   - component: {fileID: 212039511601016210}
   - component: {fileID: 114275482074977588}
-  - component: {fileID: 114026731501446084}
   - component: {fileID: 114293118290514860}
   - component: {fileID: 50249330406009248}
   - component: {fileID: 60618568329566962}
@@ -101,21 +100,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowMove: 1
   allowShoot: 1
---- !u!114 &114026731501446084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1015036691613506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69a717cd38ceda342b61b9df37ee4a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startHealth: 3
-  hitSound: {fileID: 8300000, guid: 1a9a5fc44247e8147afd96db85c1870b, type: 3}
-  Invincible: 1
 --- !u!114 &114293118290514860
 MonoBehaviour:
   m_ObjectHideFlags: 0

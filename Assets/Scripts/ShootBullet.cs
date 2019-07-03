@@ -34,7 +34,6 @@ public class ShootBullet : MonoBehaviour {
 		else{
 			this.spawnParent = gameObject.transform;
 		}
-		Debug.Log (this.spawnPoint.name);
 	}
 
 	public void Shoot(){

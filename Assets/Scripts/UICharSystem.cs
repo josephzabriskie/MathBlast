@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UICharSystem : MonoBehaviour {
+    public static UICharSystem instance; // singletonio
+
 	//Health System
 	public Image[] healthImages;
 	public Sprite[] healthSprites;
@@ -15,10 +17,23 @@ public class UICharSystem : MonoBehaviour {
 	public Image GoImage;
 	public Sprite GoOn;
 	public Sprite GoOff;
-	CharacterManager cm;
+	public CharacterManager cm;
+
+	void Awake(){
+		if(instance == null){
+			instance = this;
+		}
+		else if(instance != this){
+			Debug.LogErrorFormat("Singleton {0} instantiated multiple times, destroy all but first one up",this.GetType().Name);
+			Destroy(this);
+		}
+	}
 
 	void Start(){
 		this.cm = GetComponent<CharacterManager> ();
+		if(cm == null){
+			Debug.LogError("UIChar system relies on character manager, componenet");
+		}
 		setHighlightUI (-1);
 	}
 

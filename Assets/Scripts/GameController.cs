@@ -5,9 +5,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 	public bool launch = false;
-	public GameObject EventController;
 	public GameObject playerMenu;
-	EventController ec;
 	public GameObject StartButton;
 	public Image Title;
 	Vector3 playerMenuStartPos;
@@ -15,7 +13,6 @@ public class GameController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		this.ec = this.EventController.GetComponent<EventController> ();
 		this.playerMenuStartPos = this.playerMenu.transform.position;
 	}
 	
@@ -34,8 +31,8 @@ public class GameController : MonoBehaviour {
 		this.launch = false;
 		this.Title.enabled = false; // Could fade out
 		this.StartButton.SetActive (false); //Could add animation
-		this.ec.prevHealth = 3;
-		this.ec.StartEventController (this.LevelStartNum);
+		EventController.instance.prevHealth = 3;
+		EventController.instance.StartEventController (this.LevelStartNum);
 		this.playerMenu.transform.position = this.playerMenuStartPos;
 		this.playerMenu.SetActive (false);
 	}

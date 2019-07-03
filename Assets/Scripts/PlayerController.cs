@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : ShipBase {
 
 	//Movement vars
 	private Rigidbody2D rb;
@@ -30,6 +30,12 @@ public class PlayerController : MonoBehaviour {
 
 	PlayerInput pi;
 	Animator anim;
+	public AudioClip hitSound;
+	AudioSource auds;
+
+	PlayerController(){
+		healthMax = 3;
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -37,6 +43,7 @@ public class PlayerController : MonoBehaviour {
 		this.sb = GetComponent<ShootBullet> ();
 		this.lastShotTime = Time.time; // Doing this so that when a wave loads the player doesn't double shoot
 		this.anim = GetComponent<Animator>();
+		this.auds = GetComponent<AudioSource>();
 	}
 
 	// Update is called once per frame
@@ -46,9 +53,24 @@ public class PlayerController : MonoBehaviour {
 		anim.SetFloat("HorizVelBlend", rb.velocity.x);
 	}
 
+	//----------Health stuff
+	public override void OnDamage(){
+		UICharSystem.instance.updateHealthBar (health);
+	}
+
+	public override void OnKill(){
+		EventController.instance.StopEventController(false);
+		
+	}
+
+	public override void OnHeal(){
+		UICharSystem.instance.updateHealthBar (health);
+	}
+
+	//-----------Movement stuff
 	void FixedUpdate(){
 		if (this.pi.moving && this.allowMove) {
-			//Debug.Log (string.Format("x:{0}, y:{1}",Mathf.Cos (pi.angle), Mathf.Sin (pi.angle)));
+			//Debug.LogFormat("Fixed update move angle:{0}, moving: {1}, fire: {2}", pi.angle, pi.moving, pi.fire1);
 			float x_mult = Mathf.Cos (pi.angle);
 			x_mult = (Mathf.Abs (x_mult) > 0.001f) ? x_mult : 0;
 			float y_mult = Mathf.Sin (pi.angle);
@@ -86,7 +108,6 @@ public class PlayerController : MonoBehaviour {
 		return ((val1 > 0 && val2 < 0) || (val1 < 0 && val2 > 0)) ? true : false;
 	}
 
-
 	PlayerInput getPlayerInput(){
 		PlayerInput ret_pi = new PlayerInput (false, 0, false);
 		float x = Input.GetAxis ("Horizontal");
@@ -95,5 +116,20 @@ public class PlayerController : MonoBehaviour {
 		ret_pi.moving = (!(x == 0 && y == 0)) ? true : false;
 		ret_pi.fire1 = (Input.GetAxis ("Fire1") != 0) ? true : false;
 		return ret_pi;
+	}
+
+	//The bullet should call these!
+	void OnTriggerEnter2D(Collider2D other){
+		if (other.gameObject.layer == 12){ //current layer for enemy bullet
+			this.auds.PlayOneShot(this.hitSound);
+			base.DoDamage(1);
+			other.gameObject.GetComponent<BulletScript>().Hit();
+		}
+	}
+
+	void OnCollisionEnter2D (Collision2D coll){
+		if (coll.collider.gameObject.layer == 11){ //current layer for enemy
+			base.DoDamage(healthMax);
+		}
 	}
 }
