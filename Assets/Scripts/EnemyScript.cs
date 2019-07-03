@@ -32,13 +32,16 @@ public class EnemyScript : ShipBase {
 
 	//Implement ship base functions
 	public override void OnDamage(){} // Do nothing
+	public override void OnHeal(){} // Do nothing
+
 	public override void OnKill(){
 			Destroy(this.gameObject, 1.0f);
 			GetComponent<AudioSource>().Play ();
-			wc.addChar (this.hcs.heldValue);
+			if(wc){
+				wc.addChar (this.hcs.heldValue);
+			}
 			alive = false;
-	} //
-	public override void OnHeal(){}
+	}
 
 	void Start(){
 		this.sb = GetComponent<ShootBullet> ();

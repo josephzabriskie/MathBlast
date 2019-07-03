@@ -17,7 +17,6 @@ public class UICharSystem : MonoBehaviour {
 	public Image GoImage;
 	public Sprite GoOn;
 	public Sprite GoOff;
-	public CharacterManager cm;
 
 	void Awake(){
 		if(instance == null){
@@ -30,10 +29,6 @@ public class UICharSystem : MonoBehaviour {
 	}
 
 	void Start(){
-		this.cm = GetComponent<CharacterManager> ();
-		if(cm == null){
-			Debug.LogError("UIChar system relies on character manager, componenet");
-		}
 		setHighlightUI (-1);
 	}
 
@@ -62,7 +57,7 @@ public class UICharSystem : MonoBehaviour {
 			return;
 		}
 		for (int i = 0; i < 5; i++) {
-			charUI [i].sprite = this.cm.getCharaterSprite (input [i]);
+			charUI [i].sprite = CharacterManager.instance.getCharaterSprite (input [i]);
 		}
 	}
 

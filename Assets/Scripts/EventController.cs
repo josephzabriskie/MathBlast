@@ -6,10 +6,10 @@ public class EventController : MonoBehaviour {
 	public static EventController instance; // singletonio
 
 	public GameObject gamecont;
-	GameController gc;
 	public GameObject[] wavelist;
 	GameObject currentWave = null;
 	WaveScript currentWaveScript;
+	public int startWaveNum = 0;
 	public int controllerWaveNum = 0;
 
 	//Save Char Health
@@ -33,14 +33,13 @@ public class EventController : MonoBehaviour {
 	}
 
 	void Start(){
-		this.gc = this.gamecont.GetComponent<GameController> ();
 		this.audioS = this.GetComponent<AudioSource> ();
 		UICharSystem.instance.goalText.text = "Welcome!\n Move with arrow keys, fire with 'f'";
 	}
 
-	public void StartEventController(int startLevel){
+	public void StartEventController(){
 		this.start = true;
-		this.controllerWaveNum = startLevel;
+		this.controllerWaveNum = startWaveNum;
 		Spawn (this.controllerWaveNum);
 	}
 
@@ -58,7 +57,7 @@ public class EventController : MonoBehaviour {
 			Despawn ();
 		}
 		Debug.Log ("StopEventController: Stopping Game");
-		this.gc.StopGame ();
+		GameController.instance.StopGame();
 	}
 
 	void Update(){

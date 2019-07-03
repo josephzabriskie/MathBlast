@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 248f2a797bd4e4545974382b3c527119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heldValue: none
+  heldValue: None
 --- !u!1 &1511039832357660
 GameObject:
   m_ObjectHideFlags: 0
@@ -280,6 +280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d424066c200c8ea4fa7bf223be185ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthMax: 1
   deathSound: {fileID: 8300000, guid: de1150e82d5f1a04ba624c01064ab0ba, type: 3}
   movementType: Circle
   radius: 1

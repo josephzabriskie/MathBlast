@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class ShipBase : MonoBehaviour {
-    public int healthMax { get; protected set; }
+    public int healthMax;
     public int health { get; private set; }
     public ShipBase(){
         healthMax = 1;

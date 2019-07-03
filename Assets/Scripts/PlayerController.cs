@@ -50,7 +50,6 @@ public class PlayerController : ShipBase {
 	void Update () {
 		this.pi = getPlayerInput ();
 		//Update animation controller
-		Debug.LogFormat("horizblend set to {0}", rb.velocity.x);
 		anim.SetFloat("HorizVelBlend", rb.velocity.x);
 	}
 

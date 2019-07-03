@@ -16,7 +16,7 @@ public class BulletScript : MonoBehaviour {
 	int targetLayer;
 	float maxTime = 5;
 
-	void Awake(){
+	protected virtual void Awake(){ // Make
 		//The name to layer isn't allowed to be called in constructor, I guess ...
 		int PlayerLayer = LayerMask.NameToLayer("Player");
 		int PlayerBulletLayer = LayerMask.NameToLayer("PlayerBullet");
@@ -36,7 +36,8 @@ public class BulletScript : MonoBehaviour {
 
 	}
 
-	public void OnHit(){ // the cleanup hit stuff. Spawn particles and destroy
+	public virtual void OnHit(){ // the cleanup hit stuff. Spawn particles and destroy
+		Debug.Log("bulletscript onhit");
 		Destroy(this.gameObject);
 	}
 

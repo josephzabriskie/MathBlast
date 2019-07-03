@@ -8,7 +8,7 @@ public class HeldCharScript : MonoBehaviour {
 
 	void Start(){
 		this.sr = GetComponent<SpriteRenderer> ();
-		Sprite s = UICharSystem.instance.cm.getCharaterSprite (this.heldValue);
+		Sprite s = CharacterManager.instance.getCharaterSprite(this.heldValue);
 		sr.sprite = s;
 	}
 }
