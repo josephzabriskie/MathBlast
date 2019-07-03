@@ -143,6 +143,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13cb27508b82fc7488282c4a9f658ca0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: 0
+  damage: 1
+  spinMinMax: {x: 0, y: 0}
 --- !u!199 &1476751992
 ParticleSystemRenderer:
   serializedVersion: 6

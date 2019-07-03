@@ -13,7 +13,7 @@ public class StartButtonScript : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other){
 		if (other.gameObject.layer == 10) {//player shot
 			this.gc.launch = true;
-			other.gameObject.GetComponent<BulletScript> ().Hit ();
+			other.gameObject.GetComponent<BulletScript> ().OnHit ();
 		}
 	}
 }

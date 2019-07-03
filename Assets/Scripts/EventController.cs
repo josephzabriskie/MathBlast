@@ -55,7 +55,7 @@ public class EventController : MonoBehaviour {
 		}
 		this.start = false;
 		if (this.currentWave != null) {
-			DeSpawn ();
+			Despawn ();
 		}
 		Debug.Log ("StopEventController: Stopping Game");
 		this.gc.StopGame ();
@@ -73,7 +73,7 @@ public class EventController : MonoBehaviour {
 		}
 		int wavesuccess = this.currentWaveScript.isWaveDone ();
 		if (wavesuccess != 0) { // Non zero means that we ended the wave! Destroy old wave
-			DeSpawn ();
+			Despawn ();
 			if (wavesuccess == 1) { // Wave was beaten successfully. Spawn next wave
 				this.controllerWaveNum++;
 				if (this.controllerWaveNum >= this.wavelist.Length) {
@@ -99,16 +99,16 @@ public class EventController : MonoBehaviour {
 		this.currentWaveScript = this.currentWave.GetComponent<WaveScript> ();
 		this.currentWaveScript.startHP = this.prevHealth;
 		UICharSystem.instance.updateHealthBar(this.prevHealth);
-		Debug.Log(string.Format("set HP {0}", this.prevHealth));
+		//Debug.Log(string.Format("set HP {0}", this.prevHealth));
 		UICharSystem.instance.currLevel.text = (wave + 1).ToString ();
 		this.audioS.PlayOneShot(this.spawnSound);
 	}
 
-	void DeSpawn(){
+	void Despawn(){
 		if (currentWave == null)
-			Debug.Log ("Warning: Event Controller DeSpawn() trying to despawn a null gameobject. We'll see how it goes");
+			Debug.LogWarning ("Event Controller Despawn() trying to despawn a null gameobject. We'll see how it goes");
 		this.prevHealth = this.currentWaveScript.GetPlayerHealth ();
-		Debug.Log(string.Format("Last HP {0}", this.prevHealth));
+		//Debug.Log(string.Format("Last HP {0}", this.prevHealth));
 		Destroy (this.currentWave);
 		this.currentWave = null;
 	}

@@ -107,14 +107,4 @@ public class EnemyScript : ShipBase {
 		}
 		this.transform.position = this.center + offset;
 	}
-
-	void LinearUpdate(){
-	}
-
-	void OnTriggerEnter2D(Collider2D other){
-		if (other.gameObject.layer == 10){ // right now 10 is player bullet might change (hopefully not)
-			other.gameObject.GetComponent<BulletScript>().Hit();
-			DoDamage(1);
-		}
-	}
 }

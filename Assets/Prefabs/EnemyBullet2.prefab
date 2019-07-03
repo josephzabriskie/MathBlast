@@ -115,6 +115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13cb27508b82fc7488282c4a9f658ca0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: 1
+  damage: 1
+  spinMinMax: {x: 300, y: 300}
 --- !u!60 &60119222855228890
 PolygonCollider2D:
   m_ObjectHideFlags: 0

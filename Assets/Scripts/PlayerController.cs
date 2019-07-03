@@ -50,11 +50,13 @@ public class PlayerController : ShipBase {
 	void Update () {
 		this.pi = getPlayerInput ();
 		//Update animation controller
+		Debug.LogFormat("horizblend set to {0}", rb.velocity.x);
 		anim.SetFloat("HorizVelBlend", rb.velocity.x);
 	}
 
 	//----------Health stuff
 	public override void OnDamage(){
+		auds.PlayOneShot(this.hitSound);
 		UICharSystem.instance.updateHealthBar (health);
 	}
 
@@ -118,18 +120,9 @@ public class PlayerController : ShipBase {
 		return ret_pi;
 	}
 
-	//The bullet should call these!
-	void OnTriggerEnter2D(Collider2D other){
-		if (other.gameObject.layer == 12){ //current layer for enemy bullet
-			this.auds.PlayOneShot(this.hitSound);
-			base.DoDamage(1);
-			other.gameObject.GetComponent<BulletScript>().Hit();
-		}
-	}
-
 	void OnCollisionEnter2D (Collision2D coll){
 		if (coll.collider.gameObject.layer == 11){ //current layer for enemy
-			base.DoDamage(healthMax);
+			base.DoDamage(healthMax); // insta kill
 		}
 	}
 }
