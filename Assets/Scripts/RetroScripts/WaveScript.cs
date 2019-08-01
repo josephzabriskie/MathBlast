@@ -31,10 +31,22 @@ public class WaveScript : MonoBehaviour {
 	void Start(){
 		this.currentchars = this.initialchars;
 		this.currentSelection = 0;
-		UICharSystem.instance.setCharUI (this.currentchars);
+		UICharSystem.instance.oldSetCharUI (this.currentchars);
 		UICharSystem.instance.setHighlightUI(this.orderOfSelection[currentSelection]);
 		UICharSystem.instance.goalText.text = goalText;
 		SetPlayerHealth (this.startHP);
+		foreach(Transform child in this.transform){
+			if(child.tag == "Enemy"){
+				EnemyScript es = child.GetComponent<EnemyScript>();
+				es.OnKillCB = addChar;
+			}
+			if(child.tag == "Player"){
+				PlayerController pc = child.GetComponent<PlayerController>();
+				pc.OnKillCB = onPlayerKill;
+				pc.OnDamageCB = onPlayerHPChange;
+				pc.OnHealCB = onPlayerHPChange;
+			}
+		}
 		this.startTime = Time.time;
 		Freeze (false); // Freeze false sets enemy shoot, playe shoot/move to false
 	}
@@ -67,10 +79,11 @@ public class WaveScript : MonoBehaviour {
 		}
 	}
 
-	public void addChar(string s){ //Sorry everyone, add character takes a string...
+	public void addChar(GameObject go, string s){ //Sorry everyone, add character takes a string...
+		Debug.Log("Adding char: " + s);
 		if (!this.doneWithValues) {
 			this.currentchars [this.orderOfSelection [this.currentSelection++]] = s;
-			UICharSystem.instance.setCharUI (this.currentchars);
+			UICharSystem.instance.oldSetCharUI (this.currentchars);
 			if (this.currentSelection >= this.orderOfSelection.Length) {
 				//We're all done with our shot numbers
 				this.doneWithValues = true;
@@ -82,6 +95,14 @@ public class WaveScript : MonoBehaviour {
 			}
 		} else
 			Debug.Log ("addChar: Woah, added another char after we thought we were done?"); // turns out this is ok as long as we have that first if statement
+	}
+
+	void onPlayerKill(PlayerController pc){
+		EventController.instance.StopEventController(false);
+	}
+
+	void onPlayerHPChange(PlayerController pc){
+		UICharSystem.instance.updateHealthBar(pc.health);		
 	}
 
 	public int isWaveDone (){ //Return 1 for wave success, 0 for wave not done yet, -1 for wave failure
@@ -118,7 +139,7 @@ public class WaveScript : MonoBehaviour {
 			for(int i = 0; i < this.currentchars.Length; i++) {
 				if (this.currentchars [i] == "=")
 					this.currentchars [i] = "!=";
-				UICharSystem.instance.setCharUI (this.currentchars);
+				UICharSystem.instance.oldSetCharUI (this.currentchars);
 			}
 			UICharSystem.instance.goalText.text = this.finishthemoffBad;
 			this.waveSuccessState = -1;

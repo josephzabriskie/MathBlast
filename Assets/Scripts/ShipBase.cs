@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class ShipBase : MonoBehaviour {
-    public int healthMax;
+    public int healthMax = 1;
     public int health { get; private set; }
-    public ShipBase(){
-        healthMax = 1;
-        health = healthMax;
+    public bool invincible = false;
+
+    protected virtual void Awake(){
+        SetHealth(healthMax);
     }
 
     //Health won't ever be set above max, can go to negative
     public void DoDamage(int amount){
-        SetHealth(health - amount);
+        if(!invincible){
+            SetHealth(health - amount);
+        }
         OnDamage();
     }
 

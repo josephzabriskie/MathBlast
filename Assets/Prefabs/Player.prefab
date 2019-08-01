@@ -98,6 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61458c1aaa03d1646b28790f6c43ffb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthMax: 3
+  invincible: 0
   allowMove: 1
   allowShoot: 1
   hitSound: {fileID: 8300000, guid: 1a9a5fc44247e8147afd96db85c1870b, type: 3}
@@ -118,7 +120,7 @@ MonoBehaviour:
   velocity: 30
   startingDeg: 90
   shootSound: {fileID: 8300000, guid: 3bc532b4d87718a40b3d5fd74b66ea1b, type: 3}
-  shootType: Straight
+  shootType: 1
   numBullets: 0
   targetGameObject: {fileID: 0}
 --- !u!50 &50249330406009248

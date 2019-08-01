@@ -6,11 +6,14 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour {
 	public static GameController instance; // singletonio
 
-	public GameObject playerMenu;
-	public GameObject RetroButton;
-	public GameObject EndlessButton;
-	public Image Title;
-	//Vector3 playerMenuStartPos;
+	public GameObject mainMenuCanvas;
+	public GameObject retroUICanvas;
+	public GameObject endlessUICanvas;
+	GameObject playerShipMenu;
+	GameObject retroButton;
+	GameObject endlessButton;
+	SessionManager sm;
+	Coroutine gameStart;
 
 	void Awake(){
 		if(instance == null){
@@ -20,10 +23,15 @@ public class GameController : MonoBehaviour {
 			Debug.LogErrorFormat("Singleton {0} instantiated multiple times, destroy all but first one up",this.GetType().Name);
 			Destroy(this);
 		}
+		this.sm = GameObject.FindWithTag("SessionManager").GetComponent<SessionManager>();
+		playerShipMenu = transform.Find("PlayerShipMenu").gameObject;
+		retroButton = transform.Find("RetroButton").gameObject;
+		endlessButton = transform.Find("EndlessButton").gameObject;
+		endlessUICanvas.SetActive(false);
+		retroUICanvas.SetActive(false);
 	}
 
 	void Start () {
-		//this.playerMenuStartPos = this.playerMenu.transform.position;
 	}
 	
 	void Update () {
@@ -33,38 +41,46 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void DelayedStart(bool retro){
-		StartCoroutine(IEDelayedStart(retro));
+		if(gameStart != null){
+			StopCoroutine(gameStart);
+		}
+		gameStart = StartCoroutine(IEDelayedStart(retro));
 	}
 
 	IEnumerator IEDelayedStart(bool retro){
 		yield return new WaitForSeconds(1.5f);
 		if(retro){
-			StartRetroGame();
+			StartGameRetro();
 		}
 		else{
-			StartGame();
+			StartGameEndless();
 		}
 	}
 
-	void StartGame(){
-
+	void StartGameEndless(){
+		UIMainMenuEnable(false);
+		endlessUICanvas.SetActive(true);
+		sm.StartSession(0);
 	}
 
 	//Retro game is the original game jam version
-	void StartRetroGame(){
-		this.Title.enabled = false; // Could fade out
-		this.RetroButton.SetActive (false); //Could add animation
-		this.EndlessButton.SetActive (false); //Could add animation
+	void StartGameRetro(){
+		UIMainMenuEnable(false);
+		retroUICanvas.SetActive(true);
 		EventController.instance.prevHealth = 3;
 		EventController.instance.StartEventController();
-		//this.playerMenu.transform.position = this.playerMenuStartPos;
-		this.playerMenu.SetActive (false);
 	}
 
 	public void StopGame(){
-		this.Title.enabled = true;
-		this.RetroButton.SetActive (true);
-		this.EndlessButton.SetActive (true);
-		this.playerMenu.SetActive (true);
+		UIMainMenuEnable(true);
+		retroUICanvas.SetActive(false);
+		endlessUICanvas.SetActive(false);
+	}
+
+	void UIMainMenuEnable(bool enabled){
+		this.mainMenuCanvas.SetActive(enabled); // Could fade out
+		this.retroButton.SetActive (enabled); //Could add animation
+		this.endlessButton.SetActive (enabled); //Could add animation
+		this.playerShipMenu.SetActive (enabled); // disable player (poor naming, I know)
 	}
 }

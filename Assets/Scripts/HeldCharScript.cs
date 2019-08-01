@@ -8,7 +8,13 @@ public class HeldCharScript : MonoBehaviour {
 
 	void Start(){
 		this.sr = GetComponent<SpriteRenderer> ();
-		Sprite s = CharacterManager.instance.getCharaterSprite(this.heldValue);
-		sr.sprite = s;
+		UpdateChar(heldValue);
+	}
+
+	public void UpdateChar(string newVal){
+		heldValue = newVal;
+		if(sr != null){
+			sr.sprite = CharacterManager.instance.getCharaterSprite(this.heldValue);
+		}
 	}
 }

@@ -6,7 +6,6 @@ public class CameraScript : MonoBehaviour {
 
 	Camera c;
 	RectTransform gameRect;
-	public GameObject player;
 	float offset = 2;
 
 	void Start () {
@@ -21,11 +20,11 @@ public class CameraScript : MonoBehaviour {
 
 		// determine the game window's current aspect ratio
 		float windowaspect = (float)Screen.width / (float)Screen.height;
-		Debug.LogFormat("Window aspect currently: {0}", windowaspect);
+		//Debug.LogFormat("Window aspect currently: {0}", windowaspect);
 
 		// current viewport height should be scaled by this amount
 		float scaleheight = windowaspect / targetaspect;
-		Debug.LogFormat("Scale ht {0}", scaleheight);
+		// Debug.LogFormat("Scale ht {0}", scaleheight);
 
 		if (scaleheight < 1.0f) // if scaled height is less than current height, add letterbox
 		{  
@@ -55,7 +54,5 @@ public class CameraScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//Vector3 p = player.transform.position;
-		//this.c.transform.position = new Vector3 (this.c.transform.position.x, p.y + offset, -10);
 	}
 }

@@ -34,7 +34,7 @@ public class EventController : MonoBehaviour {
 
 	void Start(){
 		this.audioS = this.GetComponent<AudioSource> ();
-		UICharSystem.instance.goalText.text = "Welcome!\n Move with arrow keys, fire with 'f'";
+		//UICharSystem.instance.goalText.text = "Welcome!\n Move with arrow keys, fire with 'f'";
 	}
 
 	public void StartEventController(){
@@ -89,12 +89,17 @@ public class EventController : MonoBehaviour {
 	}
 
 	void Spawn(int wave){
+		Debug.LogFormat("Spawn wave {0}",wave);
 		if (currentWave != null) {
 			Debug.Log ("ERROR: Event Controller Spawn()ed when currentwave gameobject wasn't null, don't expect this to happen. Make sure to despawn before spawning");
 			return;
 		}
 		//this.currentWave = Instantiate (this.wavelist[wave], this.transform.position, this.transform.rotation);
 		this.currentWave = Instantiate (this.wavelist[wave], this.transform, true);
+		EnemyScript[] enemies = currentWave.GetComponents<EnemyScript>();
+		foreach(EnemyScript e in enemies){
+			Debug.LogFormat("{0}: hpmax = {1}",e.name, e.healthMax);
+		}
 		this.currentWaveScript = this.currentWave.GetComponent<WaveScript> ();
 		this.currentWaveScript.startHP = this.prevHealth;
 		UICharSystem.instance.updateHealthBar(this.prevHealth);

@@ -51,7 +51,7 @@ public class UICharSystem : MonoBehaviour {
 		}
 	}
 
-	public void setCharUI(string[] input){
+	public void oldSetCharUI(string[] input){
 		if (input.Length != 5) {
 			Debug.Log (string.Format ("setHighlightUI(): ERROR bad input {0}", input));
 			return;

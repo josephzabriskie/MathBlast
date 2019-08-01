@@ -33,8 +33,20 @@ public class PlayerController : ShipBase {
 	public AudioClip hitSound;
 	AudioSource auds;
 
+	// Delegates
+	public delegate void PlayerKillCallback(PlayerController plr);
+	public PlayerKillCallback OnKillCB = null;
+	public delegate void PlayerDamageCallback(PlayerController plr);
+	public PlayerDamageCallback OnDamageCB = null;
+	public delegate void PlayerHealCallback(PlayerController plr);
+	public PlayerHealCallback OnHealCB = null;
+
 	PlayerController(){
 		healthMax = 3;
+	}
+
+	protected override void Awake(){
+		base.Awake();
 	}
 
 	// Use this for initialization
@@ -56,16 +68,21 @@ public class PlayerController : ShipBase {
 	//----------Health stuff
 	public override void OnDamage(){
 		auds.PlayOneShot(this.hitSound);
-		UICharSystem.instance.updateHealthBar (health);
+		if(OnDamageCB != null){
+			OnDamageCB(this);
+		}
 	}
 
 	public override void OnKill(){
-		EventController.instance.StopEventController(false);
-		
+		if(OnKillCB != null){
+			OnKillCB(this);
+		}
 	}
 
 	public override void OnHeal(){
-		UICharSystem.instance.updateHealthBar (health);
+		if(OnHealCB != null){
+			OnHealCB(this);
+		}
 	}
 
 	//-----------Movement stuff

@@ -373,8 +373,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d424066c200c8ea4fa7bf223be185ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthMax: 1
+  invincible: 0
   deathSound: {fileID: 8300000, guid: de1150e82d5f1a04ba624c01064ab0ba, type: 3}
-  movementType: Line
+  movementType: 1
   radius: 3
   rotateSpeed: 1
   cwPath: 1
@@ -399,7 +401,7 @@ MonoBehaviour:
   velocity: 10
   startingDeg: 270
   shootSound: {fileID: 8300000, guid: 33cd8fbb567c010499a4f7627e3d83c1, type: 3}
-  shootType: Straight
+  shootType: 1
   numBullets: 0
   targetGameObject: {fileID: 0}
 --- !u!82 &82355086227019290
@@ -746,8 +748,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d424066c200c8ea4fa7bf223be185ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthMax: 1
+  invincible: 0
   deathSound: {fileID: 8300000, guid: de1150e82d5f1a04ba624c01064ab0ba, type: 3}
-  movementType: Line
+  movementType: 1
   radius: 3
   rotateSpeed: 1.5
   cwPath: 1
@@ -772,7 +776,7 @@ MonoBehaviour:
   velocity: 10
   startingDeg: 270
   shootSound: {fileID: 8300000, guid: 33cd8fbb567c010499a4f7627e3d83c1, type: 3}
-  shootType: Straight
+  shootType: 1
   numBullets: 0
   targetGameObject: {fileID: 0}
 --- !u!82 &82496427060129818

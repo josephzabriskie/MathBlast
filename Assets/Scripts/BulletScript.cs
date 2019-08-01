@@ -37,7 +37,6 @@ public class BulletScript : MonoBehaviour {
 	}
 
 	public virtual void OnHit(){ // the cleanup hit stuff. Spawn particles and destroy
-		Debug.Log("bulletscript onhit");
 		Destroy(this.gameObject);
 	}
 

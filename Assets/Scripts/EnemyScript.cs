@@ -2,15 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MovementType{
+	Static,
+	Horizontal,
+	Circle,
+}
+
+public struct EnemyConfig{
+	public MovementType movementType;
+	public ShootType shootType;
+	public Vector3 position;
+	public float fireDelayMult; // Make this shorter
+	public float shipSpeedMult;
+	public float bulletSpeedMult;
+	public string heldValue;
+	public EnemyConfig(MovementType movementType, ShootType shootType, Vector3 pos, float fdm, float ssm, float bsm, string hval){
+		this.movementType = movementType;
+		this.shootType = shootType;
+		position = pos;
+		fireDelayMult = fdm;
+		shipSpeedMult = ssm;
+		bulletSpeedMult = bsm;
+		heldValue = hval;
+	}
+	public EnemyConfig(EnemyConfig ec, string hval){ // clumsy but fast fix for the lesson that structs are immutable...
+		movementType = ec.movementType;
+		shootType = ec.shootType;
+		position = ec.position;
+		fireDelayMult = ec.fireDelayMult;
+		shipSpeedMult = ec.shipSpeedMult;
+		bulletSpeedMult = ec.bulletSpeedMult;
+		heldValue = hval;
+	}
+}
+
 public class EnemyScript : ShipBase {
 	public AudioClip deathSound;
 	Rigidbody2D rb;
 	SpriteRenderer sr;
-	public string movementType;
+	public MovementType movementType;
 	//Circle around point
 	Vector3 center;
 	public float radius = 1.0f;
-	public float rotateSpeed = 2.0f;
+	public float rotateSpeed = 2.0f; // misnomer, should be base speed
+	float speedMult;
+	float _speed;
 	private float angle = 0.0f;
 	public bool cwPath = true;
 	bool alive = true;
@@ -24,32 +60,59 @@ public class EnemyScript : ShipBase {
 	public float shotDelay = 1.0f;
 	float lastShotTime = 0.0f;
 
-	//CharHeld is child
-	HeldCharScript hcs;
-	//We should have a parent waveScript
-	WaveScript wc;
+	TextMesh heldValMesh;
+	string heldVal;
 
+	//How to inform game mgmt of what's going on
+	public delegate void EnemyKillCallback(GameObject go, string held);
+	public EnemyKillCallback OnKillCB = null;
 
 	//Implement ship base functions
 	public override void OnDamage(){} // Do nothing
 	public override void OnHeal(){} // Do nothing
 
 	public override void OnKill(){
-			Destroy(this.gameObject, 1.0f);
-			GetComponent<AudioSource>().Play ();
-			if(wc){
-				wc.addChar (this.hcs.heldValue);
-			}
-			alive = false;
+		if(OnKillCB != null){
+			OnKillCB(gameObject, heldVal);
+		}
+		rb.simulated = false; // no more collisions for this one
+		alive = false;
+		Destroy(this.gameObject, 1.0f);
+		GetComponent<AudioSource>().Play();
 	}
 
-	void Start(){
+	public void ApplyConfig(EnemyConfig ec){
+		//Debug.LogFormat("ApplyingEnemy config: {0}", ec.heldValue);
+		movementType = ec.movementType;
+		sb.shootType = ec.shootType;
+		transform.position = ec.position;
+		
+		sb.updateVelMult(ec.bulletSpeedMult);
+		UpdateSpeedMult(ec.shipSpeedMult);
+		SetHeldVal(ec.heldValue);
+		// ec.fireDelayMult; //TODO implement
+	}
+
+	protected override void Awake(){ // If you want to use awake, add stuff after base call
+		base.Awake();
 		this.sb = GetComponent<ShootBullet> ();
 		this.rb = GetComponent<Rigidbody2D> ();
-		this.sr = GetComponent<SpriteRenderer> ();
+		this.sr = GetComponent<SpriteRenderer>();
 		this.center = this.transform.position; // Set center to where we currently are positioned
-		this.hcs = GetComponentInChildren<HeldCharScript> ();
-		this.wc = GetComponentInParent<WaveScript> ();
+		this.heldValMesh = GetComponentInChildren<TextMesh>();
+		HeldCharScript hc = GetComponentInChildren<HeldCharScript>();
+		if(hc != null){ // Legacy we need to just set our heldVal to the initalized val
+			heldVal = hc.heldValue;
+		}
+	}
+
+	void SetHeldVal(string newVal){
+		heldVal = newVal;
+		heldValMesh.text = heldVal;
+	}
+
+	public void SetTargetGO(GameObject target){
+		this.sb.targetGameObject = target;
 	}
 
 	void Update(){
@@ -65,15 +128,26 @@ public class EnemyScript : ShipBase {
 	}
 
 	void FixedUpdate(){
-		//Add these lines if you want to make the baddie fly away randomly, polish
 		if(!alive){
 			return;
 		}
-		if (this.movementType == "Circle")
+		switch(movementType){
+		case MovementType.Circle:
 			CircleUpdate();
-		if (this.movementType == "Line")
+			break;
+		case MovementType.Horizontal:
 			LineUpdate();
-		//Else do nothing, just sits there
+			break;
+		case MovementType.Static:
+			break; //EzPz
+		default: // do nothing default
+			break;
+		}
+	}
+
+	public void UpdateSpeedMult(float mult){
+		speedMult = mult;
+		_speed = speedMult * rotateSpeed;
 	}
 
 	void CircleUpdate(){

@@ -12,7 +12,6 @@ public class TitleScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.LogFormat("Position: {0}", transform.position);
 		startPos = transform.position;
 	}
 	
