@@ -14,6 +14,11 @@ public class GameController : MonoBehaviour {
 	GameObject endlessButton;
 	SessionManager sm;
 	Coroutine gameStart;
+	SessionStats stats;
+
+	Text maxLvlTxt;
+	Text lastLvlTxt;
+	Text prevCorrectTxt;
 
 	void Awake(){
 		if(instance == null){
@@ -29,6 +34,14 @@ public class GameController : MonoBehaviour {
 		endlessButton = transform.Find("EndlessButton").gameObject;
 		endlessUICanvas.SetActive(false);
 		retroUICanvas.SetActive(false);
+		stats = new SessionStats();
+		//Stats txt objects
+		maxLvlTxt = mainMenuCanvas.transform.Find("StatsUI/MaxLvLUI/NumText").GetComponent<Text>();
+		maxLvlTxt.text = "--";
+		lastLvlTxt = mainMenuCanvas.transform.Find("StatsUI/LastLvLUI/NumText").GetComponent<Text>();
+		lastLvlTxt.text = "--";
+		prevCorrectTxt = mainMenuCanvas.transform.Find("StatsUI/Correct%UI/NumText").GetComponent<Text>();
+		prevCorrectTxt.text = "--";
 	}
 
 	void Start () {
@@ -75,6 +88,19 @@ public class GameController : MonoBehaviour {
 		UIMainMenuEnable(true);
 		retroUICanvas.SetActive(false);
 		endlessUICanvas.SetActive(false);
+	}
+
+	public void UpdateStats(SessionStats inStats){
+		if(inStats.maxlvl > stats.maxlvl){
+			stats.maxlvl = inStats.maxlvl;
+			maxLvlTxt.text = stats.maxlvl.ToString();
+		}
+		//Now get last percentage
+		stats.lvlCorrect = inStats.lvlCorrect;
+		stats.lvlWrong = inStats.lvlWrong;
+		prevCorrectTxt.text = ((int)(stats.GetWinPct() * 100f)).ToString();
+		//And last lvl
+		lastLvlTxt.text = inStats.maxlvl.ToString();
 	}
 
 	void UIMainMenuEnable(bool enabled){

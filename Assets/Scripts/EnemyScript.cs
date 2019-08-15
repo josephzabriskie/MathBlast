@@ -12,27 +12,30 @@ public struct EnemyConfig{
 	public MovementType movementType;
 	public ShootType shootType;
 	public Vector3 position;
-	public float fireDelayMult; // Make this shorter
+	public float shotDelay;
 	public float shipSpeedMult;
 	public float bulletSpeedMult;
 	public string heldValue;
-	public EnemyConfig(MovementType movementType, ShootType shootType, Vector3 pos, float fdm, float ssm, float bsm, string hval){
+	public int bulletCount; // In the case of shoot type circle burst
+	public EnemyConfig(MovementType movementType, ShootType shootType, Vector3 pos, float fdm, float ssm, float bsm, string hval, int bCnt){
 		this.movementType = movementType;
 		this.shootType = shootType;
 		position = pos;
-		fireDelayMult = fdm;
+		shotDelay = fdm;
 		shipSpeedMult = ssm;
 		bulletSpeedMult = bsm;
 		heldValue = hval;
+		bulletCount = bCnt;
 	}
 	public EnemyConfig(EnemyConfig ec, string hval){ // clumsy but fast fix for the lesson that structs are immutable...
 		movementType = ec.movementType;
 		shootType = ec.shootType;
 		position = ec.position;
-		fireDelayMult = ec.fireDelayMult;
+		shotDelay = ec.shotDelay;
 		shipSpeedMult = ec.shipSpeedMult;
 		bulletSpeedMult = ec.bulletSpeedMult;
 		heldValue = hval;
+		bulletCount = ec.bulletCount;
 	}
 }
 
@@ -44,7 +47,7 @@ public class EnemyScript : ShipBase {
 	//Circle around point
 	Vector3 center;
 	public float radius = 1.0f;
-	public float rotateSpeed = 2.0f; // misnomer, should be base speed
+	public float baseSpeed = 2.0f; // misnomer, should be base speed
 	float speedMult;
 	float _speed;
 	private float angle = 0.0f;
@@ -55,7 +58,7 @@ public class EnemyScript : ShipBase {
 	public bool horizPath = true;
 
 	//Shot vars
-	ShootBullet sb;
+	ShootBullet shootBullet;
 	public bool allowShoot = true;
 	public float shotDelay = 1.0f;
 	float lastShotTime = 0.0f;
@@ -82,20 +85,27 @@ public class EnemyScript : ShipBase {
 	}
 
 	public void ApplyConfig(EnemyConfig ec){
+		Vector2 CIRCLE_RADIUS = new Vector2(.8f,1.5f);
 		//Debug.LogFormat("ApplyingEnemy config: {0}", ec.heldValue);
+		radius = Random.Range(CIRCLE_RADIUS.x, CIRCLE_RADIUS.y);
 		movementType = ec.movementType;
-		sb.shootType = ec.shootType;
-		transform.position = ec.position;
-		
-		sb.updateVelMult(ec.bulletSpeedMult);
+		shootBullet.shootType = ec.shootType;
+		transform.position = ec.position;		
+		shootBullet.updateVelMult(ec.bulletSpeedMult);
+		shootBullet.numBullets = ec.bulletCount;
+		shotDelay = ec.shotDelay;
 		UpdateSpeedMult(ec.shipSpeedMult);
 		SetHeldVal(ec.heldValue);
 		// ec.fireDelayMult; //TODO implement
 	}
 
+	public void SetBulletParent(Transform parent){
+		shootBullet.spawnParent = parent;
+	}
+
 	protected override void Awake(){ // If you want to use awake, add stuff after base call
 		base.Awake();
-		this.sb = GetComponent<ShootBullet> ();
+		this.shootBullet = GetComponent<ShootBullet> ();
 		this.rb = GetComponent<Rigidbody2D> ();
 		this.sr = GetComponent<SpriteRenderer>();
 		this.center = this.transform.position; // Set center to where we currently are positioned
@@ -112,12 +122,12 @@ public class EnemyScript : ShipBase {
 	}
 
 	public void SetTargetGO(GameObject target){
-		this.sb.targetGameObject = target;
+		this.shootBullet.targetGameObject = target;
 	}
 
 	void Update(){
 		if (Time.time - this.lastShotTime > this.shotDelay && this.alive && this.allowShoot){
-			sb.Shoot ();
+			shootBullet.Shoot ();
 			this.lastShotTime = Time.time;
 		}
 		if (!alive){
@@ -147,11 +157,11 @@ public class EnemyScript : ShipBase {
 
 	public void UpdateSpeedMult(float mult){
 		speedMult = mult;
-		_speed = speedMult * rotateSpeed;
+		_speed = speedMult * baseSpeed;
 	}
 
 	void CircleUpdate(){
-		this.angle += this.rotateSpeed * Time.deltaTime;
+		this.angle += _speed * Time.deltaTime;
 		if (this.angle > 6.28319f)
 			this.angle -= 6.28319f;
 		Vector3 offset;
@@ -164,7 +174,7 @@ public class EnemyScript : ShipBase {
 	}
 
 	void LineUpdate(){ //Still uses same vars as Circle update, radius, rotatespeed just add new bool for horiz/vert
-		this.angle += this.rotateSpeed * Time.deltaTime;
+		this.angle += _speed * Time.deltaTime;
 		if (this.angle > 6.28319f)
 			this.angle -= 6.28319f;
 		Vector3 offset;

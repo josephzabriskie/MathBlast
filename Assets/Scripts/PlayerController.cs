@@ -33,6 +33,9 @@ public class PlayerController : ShipBase {
 	public AudioClip hitSound;
 	AudioSource auds;
 
+	//Camera shake
+	CameraScript cameraScript;
+
 	// Delegates
 	public delegate void PlayerKillCallback(PlayerController plr);
 	public PlayerKillCallback OnKillCB = null;
@@ -47,6 +50,7 @@ public class PlayerController : ShipBase {
 
 	protected override void Awake(){
 		base.Awake();
+		cameraScript = Camera.main.GetComponent<CameraScript>();
 	}
 
 	// Use this for initialization
@@ -68,6 +72,7 @@ public class PlayerController : ShipBase {
 	//----------Health stuff
 	public override void OnDamage(){
 		auds.PlayOneShot(this.hitSound);
+		cameraScript.Shake(0.3f, 0.1f);
 		if(OnDamageCB != null){
 			OnDamageCB(this);
 		}

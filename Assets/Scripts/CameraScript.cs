@@ -7,6 +7,12 @@ public class CameraScript : MonoBehaviour {
 	Camera c;
 	RectTransform gameRect;
 	float offset = 2;
+	Coroutine shakeCR;
+	public AnimationCurve shakeCurve;
+
+	void Awake(){
+		shakeCR = null;
+	}
 
 	void Start () {
 		this.c = this.GetComponent<Camera> ();
@@ -51,8 +57,37 @@ public class CameraScript : MonoBehaviour {
 			this.c.rect = rect;
 		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+	public void Shake(float duration, float magnitude){
+		if(shakeCR != null){
+			StopCoroutine(shakeCR);
+			shakeCR = null;
+		}
+		shakeCR = StartCoroutine(IEShake(duration, magnitude));
 	}
+
+	//Cancel shake in progress
+	public void ShakeStop(){
+		if(shakeCR != null){
+			StopCoroutine(shakeCR);
+			shakeCR = null;
+		}
+	}
+
+   	IEnumerator IEShake(float duration, float magnitude)
+   	{
+        Vector3 orignalPosition = transform.position;
+        float elapsed = 0f;
+        
+        while (elapsed < duration)
+        {
+            float x = Random.Range(-1f, 1f) * magnitude * shakeCurve.Evaluate(elapsed/duration);
+            float y = Random.Range(-1f, 1f) * magnitude * shakeCurve.Evaluate(elapsed/duration);
+
+            transform.position = new Vector3(x, y, -10f);
+            elapsed += Time.deltaTime;
+            yield return 0;
+        }
+        transform.position = orignalPosition;
+    }
 }

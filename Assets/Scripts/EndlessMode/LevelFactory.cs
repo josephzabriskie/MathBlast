@@ -13,15 +13,15 @@ public struct LevelData{
 }
 
 public struct Question{
-    public int val1;
-    public int val2;
+    public string val1;
+    public string val2;
     public string op;
-    public int val3;
+    public string val3;
     public mathOp mo;
     public quesType qt;
     public string question;
     public string ans;
-    public Question(int val1, string op, int val2, int val3, mathOp mo, quesType qt, string q){
+    public Question(string val1, string op, string val2, string val3, mathOp mo, quesType qt, string q){
         this.val1 = val1;
         this.val2 = val2;
         this.op = op;
@@ -44,6 +44,9 @@ public struct Question{
             Debug.LogErrorFormat("Unhandled question type: {0}", qt);
             break;
         }
+    }
+    public override string ToString(){
+        return question;
     }
 }
 
@@ -68,16 +71,16 @@ public struct LevelParams{
     //Difficulty parameters
     public Vector2Int shipCountRange;
     public Vector2 speedRange;
-    public Vector2 fireRateRange;
+    public Vector2 shotDelayRange;
     public float bulletSpeed;
-    public LevelParams(List<mathOp> mo, List<quesType> qt, bool bonuslvl, int bonusNum, Vector2Int shipCountR, Vector2 speedR, Vector2 fireRateR, float bulletSpeed){
+    public LevelParams(List<mathOp> mo, List<quesType> qt, bool bonuslvl, int bonusNum, Vector2Int shipCountR, Vector2 speedR, Vector2 shotDelayR, float bulletSpeed){
         useOps = mo;
         quesTypes = qt;
         this.bonuslvl = bonuslvl;
         this.bonusNum = bonusNum;
         shipCountRange = shipCountR;
         speedRange = speedR;
-        fireRateRange = fireRateR;
+        shotDelayRange = shotDelayR;
         this.bulletSpeed = bulletSpeed;
     }
 } 
@@ -123,12 +126,12 @@ public class LevelFactory{
         List<EnemyConfig> outCfg = new List<EnemyConfig>();
         // pick random number of enemy ships between specified level params, making sure we have enough to cover all questions
         int shipcount = Random.Range(Mathf.Max(lp.shipCountRange.x, qs.Count), Mathf.Max(lp.shipCountRange.y, qs.Count));
-        int row = MAXROWS - 1; // The row selection should be random, but startin from back for now
+        int row = MAXROWS - 1; // The row selection should be random, but starting from back for now
         if(shipcount > 9 || shipcount < 2){
             Debug.LogWarningFormat("I'm not prepared to handle only {0} ship(s)", shipcount);
             return outCfg;
         }
-        while(shipcount != 0 || row == 0){
+        while(shipcount != 0 || row >= 0){
             int s = Random.Range(1,4); // pick number between 1 and 3 for # ships per row
             if(shipcount < s){
                 s = shipcount;
@@ -155,12 +158,19 @@ public class LevelFactory{
                 }
 
                 ShootType at = availAttacks[Random.Range(0, availAttacks.Count)];
-                float fireRate = Random.Range(lp.fireRateRange.x, lp.fireRateRange.y);
+                float shotDelay = Random.Range(lp.shotDelayRange.x, lp.shotDelayRange.y);
                 float moveSpeed = Random.Range(lp.speedRange.x, lp.speedRange.y);
                 float bulletSpeed = lp.bulletSpeed;
+                int bulletCount = 0;
+                if(at == ShootType.CircleBurst){ // if we're a circle burst, we need to set addtl parameters
+                    bulletCount = 12;
+                    bulletSpeed = bulletSpeed/2.5f; //Reduce the speed here, it's pretty wacky if too fast
+                    shotDelay = shotDelay*2.0f; //Also so many bullets, slow em down
+                }
+                Debug.LogFormat("Row: {0}", row);
                 Vector3 pos = new Vector3(startx + spacing * i, rowPos[row], 0f) - posOffset;
                 string ans = Random.Range(FAKEMIN, FAKEMAX).ToString(); // Get fake ans (ok if randomly matches right ans for now)
-                outCfg.Add(new EnemyConfig(mt, at, pos, fireRate, moveSpeed, bulletSpeed, ans));
+                outCfg.Add(new EnemyConfig(mt, at, pos, shotDelay, moveSpeed, bulletSpeed, ans, bulletCount));
             }
             row--;
         }
@@ -231,7 +241,7 @@ public class LevelFactory{
             Debug.LogErrorFormat("Unhandled ques type: {0}", qt);
             break;
         }
-        Question quesOut = new Question(val1, opMap[mo], val2, val3, mo, qt, quesStr);
+        Question quesOut = new Question(val1.ToString(), opMap[mo], val2.ToString(), val3.ToString(), mo, qt, quesStr);
         return quesOut;
     }
 

@@ -29,7 +29,7 @@ public class ShootBullet : MonoBehaviour {
 	public GameObject targetGameObject;
 
 	//Wavescript: Make sure that we spawn our bullet int the correct wave so it get's destoryed on level change
-	Transform spawnParent;
+	public Transform spawnParent = null;
 
 	void Awake(){
 		this.currentRads = this.startingDeg * Mathf.Deg2Rad;
@@ -39,12 +39,14 @@ public class ShootBullet : MonoBehaviour {
 	void Start(){
 		WaveScript ws = this.GetComponentInParent<WaveScript>();
 		SessionManager sm = GetComponentInParent<SessionManager>();
-		if (ws != null)
-			this.spawnParent = ws.transform;	
-		else if(sm != null)
-			this.spawnParent = sm.transform;
-		else
-			this.spawnParent = gameObject.transform;
+		if(spawnParent == null){
+			if (ws != null)
+				this.spawnParent = ws.transform;	
+			else if(sm != null)
+				this.spawnParent = sm.transform;
+			else
+				this.spawnParent = gameObject.transform;
+		}
 		updateVelMult(velocityMult);
 	}
 
